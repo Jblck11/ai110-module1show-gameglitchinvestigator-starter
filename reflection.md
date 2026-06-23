@@ -8,12 +8,21 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 - List at least two concrete bugs you noticed at the start  
   (for example: "the hints were backwards").
 
+-The game looked ok but the functionality was off. the number guesses seemed inconsistant. when i selected the number 1 it still responded with "lower". When i tried 0, i expected invalid but it still said lower. Also when i tried a high number, even if the answer was lower the hint still stated higher
+
+
 **Bug Reproduction Log**
 
 Document at least 3 bugs you found. Add rows as needed.
 
-| Input | Expected Behavior | Actual Behavior | Console Output / Error |
-|-------|-------------------|-----------------|------------------------|
+| Input      | Expected Behavior         | Actual Behavior | Console Output / Error |
+|------------|---------------------------|-----------------|------------------------|
+ guess of 1  |unless answer is 1         |response: "Lower"| "None"
+               response should be "higher"|                                          
+ guess of 0  | "invalid"; instructions state| response: "Lower" | "None"
+             | guess from 1 - 100           |
+ Selecting "New game"| Game Reset | No response; game over banner remains | "None"
+ button              |       
 | | | | |
 | | | | |
 | | | | |
