@@ -25,21 +25,34 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+- [x] **Describe the game's purpose.** "Glitchy Guesser" is a Streamlit number-guessing game. The app picks a secret number within a range based on the chosen difficulty, and the player tries to guess it within a limited number of attempts, using "higher/lower" hints and tracking a score.
+
+- [x] **Detail which bugs you found.**
+  - The hints were backwards — guessing too low told you to go LOWER and too high told you to go HIGHER.
+  - The secret number changed on some submits (it was being cast to a string on even attempts), so guesses were compared incorrectly.
+  - The score sometimes went up after a wrong guess instead of down (even-numbered "Too High" attempts added 5 points).
+  - The "New Game" button didn't fully reset — the game-over banner stayed on screen and you couldn't keep playing.
+
+- [x] **Explain what fixes you applied.**
+  - Swapped the hint messages in `check_guess` so "Too High" says "Go LOWER!" and "Too Low" says "Go HIGHER!".
+  - Kept the secret as an integer on every attempt instead of casting it to a string.
+  - Made any wrong guess always subtract 5 points in `update_score`.
+  - Reset `st.session_state.status` to `"playing"` in the New Game handler so the banner clears and a fresh round starts.
+  - Refactored the four logic functions out of `app.py` into `logic_utils.py` and added a pytest suite (`test/test_game_logic.py`) to confirm the fixes.
 
 ## 📸 Demo Walkthrough
 
 Describe your fixed game in numbered steps so a reader can follow along without watching a video:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. Start the app with `streamlit run app.py` and open http://localhost:8501 in your browser.
+2. In the left sidebar, pick a difficulty (Easy, Normal, or Hard). The sidebar shows the number range and how many attempts you get for that difficulty.
+3. Type a number into "Enter your guess" and click **Submit Guess 🚀**. With "Show hint" checked, the game now gives the correct direction — "Go HIGHER!" when your guess is too low and "Go LOWER!" when it's too high.
+4. Keep guessing within your attempt limit. Your score updates after each guess (a wrong guess always costs 5 points), and the secret number stays the same the whole round instead of changing on every submit.
+5. When you guess the number you see the win message; if you run out of attempts you see the game-over banner. Click **New Game 🔁** to reset — the banner clears, the score and attempts reset, and a new secret number is chosen so you can play again.
 
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
+**Screenshot** *(optional)*:
+
+![Glitchy Guesser winning screen — "You won! The secret was 79."](screenshot.png)
 
 ## 🧪 Test Results
 

@@ -31,30 +31,28 @@ Document at least 3 bugs you found. Add rows as needed.
 
 ## 2. How did you use AI as a teammate?
 
-- Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
-- Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
-- Give one example of an AI suggestion that was incorrect or misleading (including what the AI suggested and how you verified the result).
+I used Claude Code (in agent mode) as my main AI teammate for this project. I used it to help me check the bugs, refactor the game logic, and write tests, while I made the choices about what to actually keep.
 
----
+A correct suggestion: when I described the backwards hint behavior, Claude figured out that `check_guess` was returning "Go HIGHER!" for a too-high guess and vice versa, and swapped the messages. I verified the fix by writing a pytest test that checks a guess of 1 against a secret of 50 returns "Too Low" — it passed, along with the other 16 tests.
+
+An incorrect/misleading suggestion: the AI first told me to run the app with `py -m streamlit run app.py`, but that kept giving me "No module named streamlit." I verified the problem by checking which Python `py` was actually using, and found I had two virtual environments and was activating an empty one inside the project folder instead of the real shared one. So the AI's command looked reasonable but was wrong for my setup until we tracked down the environment problem together.
 
 ## 3. Debugging and testing your fixes
 
-- How did you decide whether a bug was really fixed?
-- Describe at least one test you ran (manual or using pytest)  
-  and what it showed you about your code.
-- Did AI help you design or understand any tests? How?
+Determined bug was  fixed when I could both reproduce the old behavior and then show it was gone — for the logic bugs that meant a pytest test. For the "New Game" bug it meant clicking the button in the browser and watching the game-over banner actually disappear. I ran `python -m pytest test/test_game_logic.py` and all 17 tests passed, including a regression test for the backwards-hint glitch and tests confirming a wrong guess always loses 5 points. That showed me my `check_guess` and `update_score` functions behaved correctly across the cases, not just the one I happened to try by hand.
+
+AI helped me design the tests. Claude wrote the parametrized pytest suite (covering difficulty ranges, parsing, guess checking, and scoring) and explained why a regression test for the "guess 1 → Go LOWER" bug was worth keeping so the glitch can't quietly come back.
 
 ---
 
 ## 4. What did you learn about Streamlit and state?
 
-- How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+I'd tell a friend that Streamlit re-runs your whole script from top to bottom every single time you interact with the page — every button click or checkbox toggle starts the script over from line 1. Because of that, any normal variable gets wiped and recreated on each run, so if you want to remember something (like the secret number, the score, or whether the game is over) you have to store it in `st.session_state`, which survives between reruns. Two of our bugs were really state bugs: the secret number was getting changed on some reruns, and the "New Game" button reset the score and secret but forgot to reset the `status`, so the game-over banner kept coming back on the next rerun. Once I thought about it as "the script restarts, but session_state remembers," those bugs made a lot more sense.
 
 ---
 
 ## 5. Looking ahead: your developer habits
 
-- What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
-- What is one thing you would do differently next time you work with AI on a coding task?
-- In one or two sentences, describe how this project changed the way you think about AI generated code.
+One habit I want to reuse is writing a quick pytest test to confirm a bug is fixed instead of just eyeballing it once — pulling the game logic out of `app.py` into `logic_utils.py` made that easy and I want to keep separating logic from the UI so it stays testable. One thing I'd do differently next time is to check my environment first (which Python and which virtual environment I'm actually using) before assuming an AI's run command is wrong, because I lost time on the "No module named streamlit" error that turned out to be the wrong venv, not the code.
+
+This project changed how I think about AI-generated code: it can produce correct fixes and useful tests fast, but it can also confidently give me commands or code that don't fit my actual setup, so I learned to treat its output as a strong suggestion I still have to verify myself.
